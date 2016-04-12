@@ -21,22 +21,22 @@ func TestDockerGatherContainerStats(t *testing.T) {
 	stats := testStats()
 
 	tags := map[string]string{
-		"cont_id":    "foobarbaz",
-		"cont_name":  "redis",
-		"cont_image": "redis/image",
+		"container_name":  "redis",
+		"container_image": "redis/image",
 	}
-	gatherContainerStats(stats, &acc, tags)
+	gatherContainerStats(stats, &acc, tags, "123456789")
 
 	// test docker_net measurement
 	netfields := map[string]interface{}{
-		"rx_dropped": uint64(1),
-		"rx_bytes":   uint64(2),
-		"rx_errors":  uint64(3),
-		"tx_packets": uint64(4),
-		"tx_dropped": uint64(1),
-		"rx_packets": uint64(2),
-		"tx_errors":  uint64(3),
-		"tx_bytes":   uint64(4),
+		"rx_dropped":   uint64(1),
+		"rx_bytes":     uint64(2),
+		"rx_errors":    uint64(3),
+		"tx_packets":   uint64(4),
+		"tx_dropped":   uint64(1),
+		"rx_packets":   uint64(2),
+		"tx_errors":    uint64(3),
+		"tx_bytes":     uint64(4),
+		"container_id": "123456789",
 	}
 	nettags := copyTags(tags)
 	nettags["network"] = "eth0"
@@ -87,6 +87,7 @@ func TestDockerGatherContainerStats(t *testing.T) {
 		"inactive_file":             uint64(3),
 		"total_pgpgin":              uint64(4),
 		"usage_percent":             float64(55.55),
+		"container_id":              "123456789",
 	}
 
 	acc.AssertContainsTaggedFields(t, "docker_mem", memfields, tags)
@@ -103,6 +104,7 @@ func TestDockerGatherContainerStats(t *testing.T) {
 		"throttling_throttled_periods": uint64(0),
 		"throttling_throttled_time":    uint64(0),
 		"usage_percent":                float64(400.0),
+		"container_id":                 "123456789",
 	}
 	acc.AssertContainsTaggedFields(t, "docker_cpu", cpufields, cputags)
 
@@ -372,10 +374,9 @@ func TestDockerGatherInfo(t *testing.T) {
 			"usage_total": uint64(1231652),
 		},
 		map[string]string{
-			"cont_id":    "b7dfbb9478a6ae55e237d4d74f8bbb753f0817192b5081334dc78476296e2173",
-			"cont_name":  "etcd2",
-			"cont_image": "quay.io/coreos/etcd:v2.2.2",
-			"cpu":        "cpu3",
+			"container_name":  "etcd2",
+			"container_image": "quay.io/coreos/etcd:v2.2.2",
+			"cpu":             "cpu3",
 		},
 	)
 	acc.AssertContainsTaggedFields(t,
@@ -415,11 +416,11 @@ func TestDockerGatherInfo(t *testing.T) {
 			"pgfault":                   uint64(0),
 			"usage":                     uint64(0),
 			"limit":                     uint64(18935443456),
+			"container_id":              "b7dfbb9478a6ae55e237d4d74f8bbb753f0817192b5081334dc78476296e2173",
 		},
 		map[string]string{
-			"cont_id":    "b7dfbb9478a6ae55e237d4d74f8bbb753f0817192b5081334dc78476296e2173",
-			"cont_name":  "etcd2",
-			"cont_image": "quay.io/coreos/etcd:v2.2.2",
+			"container_name":  "etcd2",
+			"container_image": "quay.io/coreos/etcd:v2.2.2",
 		},
 	)
 
